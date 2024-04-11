@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
 from asyncs import *
+from data import db_session
 
 load_dotenv()
 BOT_TOKEN = os.getenv('TOKEN')
@@ -32,6 +33,7 @@ def main():
     )
 
     application.add_handler(conv_handler)
+    db_session.global_init("db/codes.db")
     application.run_polling()
 
 

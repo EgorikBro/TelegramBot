@@ -23,10 +23,14 @@ def main():
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
-            1: [CommandHandler('voyage_by_date', voyage_by_date),
-                CommandHandler('voyage_by_station', voyage_by_station),
-                CommandHandler('near_station', near_station),
-                CommandHandler('near_city', near_city)]
+            '1': [CommandHandler('voyage_by_date', voyage_by_date),
+                  CommandHandler('voyage_by_station', voyage_by_station),
+                  CommandHandler('near_station', near_station),
+                  CommandHandler('near_city', near_city)],
+            '2': [CommandHandler('city', city),
+                  CommandHandler('station', station)],
+            '2.1': [MessageHandler(filters.TEXT & ~filters.COMMAND, )],
+            '2.2': [MessageHandler(filters.TEXT & ~filters.COMMAND, )]
         },
 
         fallbacks=[CommandHandler('stop', stop)]

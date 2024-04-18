@@ -1,5 +1,4 @@
 import logging
-import os
 
 from dotenv import load_dotenv
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
@@ -29,8 +28,17 @@ def main():
                   CommandHandler('near_city', near_city)],
             '2': [CommandHandler('city', city),
                   CommandHandler('station', station)],
-            '2.1': [MessageHandler(filters.TEXT & ~filters.COMMAND, )],
-            '2.2': [MessageHandler(filters.TEXT & ~filters.COMMAND, )]
+            '2.1': [MessageHandler(filters.TEXT & ~filters.COMMAND, city_response_1)],
+            '2.1.1': [MessageHandler(filters.TEXT & ~filters.COMMAND, city_response_2)],
+            '2.1.2': [MessageHandler(filters.TEXT & ~filters.COMMAND, date_response)],
+            '2.1.3': [CommandHandler('plane', plane),
+                      CommandHandler('train', train),
+                      CommandHandler('suburban', suburban),
+                      CommandHandler('bus', bus),
+                      CommandHandler('water', water),
+                      CommandHandler('helicopter', helicopter),
+                      CommandHandler('nothing', nothing)],
+            '2.1.4': [MessageHandler(filters.TEXT & ~filters.COMMAND, number)]
         },
 
         fallbacks=[CommandHandler('stop', stop)]

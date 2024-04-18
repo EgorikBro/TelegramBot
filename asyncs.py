@@ -2,6 +2,9 @@ from telegram import ReplyKeyboardMarkup
 from telegram.ext import ConversationHandler
 
 
+params = {}
+
+
 async def start(update, context):
     await update.message.reply_text("Вас приветствует бот расписаний.\n"
                                     "Что вас интересует?",
@@ -17,16 +20,16 @@ async def voyage_by_date(update, context):
 
 
 async def city(update, context):
-    await update.message.reply_text('Введите название города')
+    await update.message.reply_text('Введите название города отправления.')
 
 
 async def city_response(update, context):
     city1 = update.message.text
-
+    params['from'] = city1
 
 
 async def station(update, context):
-    await update.message.reply_text('Введите название станции')
+    await update.message.reply_text('Введите название станции отправления.')
 
 
 async def voyage_by_station(update, context):

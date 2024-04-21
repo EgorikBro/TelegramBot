@@ -22,7 +22,7 @@ def main():
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
-            '1': [CommandHandler('voyage_by_date', voyage_by_date),
+            '1': [CommandHandler('voyage_between_stations', voyage_between_stations),
                   CommandHandler('voyage_by_station', voyage_by_station),
                   CommandHandler('near_station', near_station),
                   CommandHandler('near_city', near_city)],
@@ -38,9 +38,13 @@ def main():
                       CommandHandler('water', water),
                       CommandHandler('helicopter', helicopter),
                       CommandHandler('nothing', nothing)],
-            '2.1.4': [MessageHandler(filters.TEXT & ~filters.COMMAND, number)]
+            '2.1.4': [MessageHandler(filters.TEXT & ~filters.COMMAND, number)],
+            '2.2': [MessageHandler(filters.TEXT & ~filters.COMMAND, station_response_1)],
+            '2.2.1': [MessageHandler(filters.TEXT & ~filters.COMMAND, station_response_2)],
+            '3': [MessageHandler(filters.TEXT & ~filters.COMMAND, station_response)],
+            '4': [MessageHandler(filters.TEXT & ~filters.COMMAND, place_response)],
+            '4.1': [MessageHandler(filters.TEXT & ~filters.COMMAND, radius_response)],
         },
-
         fallbacks=[CommandHandler('stop', stop)]
     )
 

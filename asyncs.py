@@ -281,8 +281,7 @@ async def near_city_response(update, context):
         return '1'
     else:
         await update.message.reply_text('В радиусе 50 км не найден город. Попробуйте ещё раз.')
-        return ('5'
-                '')
+        return '5'
 
 
 async def stop(update, context):

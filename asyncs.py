@@ -60,13 +60,26 @@ async def city_response_2(update, context):
 
 async def date_response(update, context):
     date = update.message.text
-    params['date'] = date
-    await update.message.reply_text('Выберите тип транспорта.',
-                                    reply_markup=ReplyKeyboardMarkup([['/plane', '/train'],
-                                                                      ['/suburban', '/bus'],
-                                                                      ['/water', '/helicopter'],
-                                                                      ['/nothing']]))
-    return '2.1.3'
+    if len(date.split('-')) == 3:
+        if len(date.split('-')[0]) == 4 and len(date.split('-')[1]) == 2 and len(date.split('-')[2]) == 2:
+            try:
+                int(date.split('-')[0]), int(date.split('-')[1]), int(date.split('-')[2])
+                params['date'] = date
+                await update.message.reply_text('Выберите тип транспорта.',
+                                                reply_markup=ReplyKeyboardMarkup([['/plane', '/train'],
+                                                                                  ['/suburban', '/bus'],
+                                                                                  ['/water', '/helicopter'],
+                                                                                  ['/nothing']]))
+                return '2.1.3'
+            except ValueError:
+                await update.message.reply_text('Неверный формат даты!')
+                return '2.1.2'
+        else:
+            await update.message.reply_text('Неверный формат даты!')
+            return '2.1.2'
+    else:
+        await update.message.reply_text('Неверный формат даты!')
+        return '2.1.2'
 
 
 async def plane(update, context):

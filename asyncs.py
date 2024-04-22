@@ -8,7 +8,6 @@ from data.cities import Cities
 from data.stations import Stations
 from api_library import *
 
-
 load_dotenv()
 params = {'apikey': os.getenv('APIKEY')}
 flag = False
@@ -17,8 +16,9 @@ flag = False
 async def start(update, context):
     await update.message.reply_text("Вас приветствует бот расписаний.\n"
                                     "Что вас интересует?",
-                                    reply_markup=ReplyKeyboardMarkup([['/voyage_between_stations', '/voyage_by_station'],
-                                                                      ['/near_station', '/near_city']]))
+                                    reply_markup=ReplyKeyboardMarkup(
+                                        [['/voyage_between_stations', '/voyage_by_station'],
+                                         ['/near_station', '/near_city']]))
     return '1'
 
 
@@ -119,46 +119,49 @@ async def number(update, context):
     if params.get('from'):
         voyages = get_voyage_between(**params)
         for i in voyages['segments']:
-            await update.message.reply_text(f'{a}. {i['thread']['title']}\n'
-                                            f'Номер рейса - {i['thread']['number']}\n'
-                                            f'Станция отправления - {i['from']['title']}, {i['from']['station_type_name']}\n'
-                                            f'Станция прибытия - {i['to']['title']}, {i['to']['station_type_name']}\n'
-                                            f'Время отправления - {i['departure'].split('T')[0]} {i['departure'].split('T')[1]}\n'
-                                            f'Время прибытия - {i['arrival'].split('T')[0]} {i['arrival'].split('T')[1]}\n'
-                                            f'Возможность приобретения электронного билета - {i['tickets_info']['et_marker']}\n')
+            await update.message.reply_text(f'{a}. {i["thread"]["title"]}\n'
+                                            f'Номер рейса - {i["thread"]["number"]}\n'
+                                            f'Станция отправления - {i["from"]["title"]}, {i["from"]["station_type_name"]}\n'
+                                            f'Станция прибытия - {i["to"]["title"]}, {i["to"]["station_type_name"]}\n'
+                                            f'Время отправления - {i["departure"].split("T")[0]} {i["departure"].split("T")[1]}\n'
+                                            f'Время прибытия - {i["arrival"].split("T")[0]} {i["arrival"].split("T")[1]}\n'
+                                            f'Возможность приобретения электронного билета - {i["tickets_info"]["et_marker"]}\n')
             for j in i['tickets_info']['places']:
                 await update.message.reply_text('Билеты:\n'
-                                                f' Тип билета - {j['name']}\n'
-                                                f' Стоимость - {j['price']['whole'] + j['price']['cents'] / 100} {j['currency']}\n')
+                                                f' Тип билета - {j["name"]}\n'
+                                                f' Стоимость - {j["price"]["whole"] + j["price"]["cents"] / 100} {j["currency"]}\n')
             await update.message.reply_text('Информация о перевозчике:\n'
-                                            f' Название - {i['thread']['carrier']['title']}\n'
-                                            f' Сайт - {i['thread']['carrier']['url']}\n'
-                                            f' Email - {i['thread']['carrier']['email']}\n'
-                                            f' Телефон - {i['thread']['carrier']['phone']}\n')
+                                            f' Название - {i["thread"]["carrier"]["title"]}\n'
+                                            f' Сайт - {i["thread"]["carrier"]["url"]}\n'
+                                            f' Email - {i["thread"]["carrier"]["email"]}\n'
+                                            f' Телефон - {i["thread"]["carrier"]["phone"]}\n"')
             a += 1
     elif params.get('station'):
         voyages = get_voyage_by_station(**params)
         for i in voyages['schedule']:
-            await update.message.reply_text(f'{a}. {i['thread']['title']}\n'
-                                            f'Номер рейса - {i['thread']['number']}\n'
-                                            f'Время отправления - {i['departure'].split('T')[0]} {i['departure'].split('T')[1]}\n'
-                                            f'Время прибытия - {i['arrival'].split('T')[0]} {i['arrival'].split('T')[1]}\n'
-                                            f'Перевозчик - {i['thread']['carrier']['title']}\n'
-                                            f'Дни курсирования нитки: {i['days']}\n'
-                                            f'Дни, в которые нитка не курсирует: {i['except_days']}')
+            await update.message.reply_text(f'{a}. {i["thread"]["title"]}\n'
+                                            f'Номер рейса - {i["thread"]["number"]}\n'
+                                            f'Время отправления - {i["departure"].split("T")[0]} {i["departure"].split("T")[1]}\n'
+                                            f'Время прибытия - {i["arrival"].split("T")[0]} {i["arrival"].split("T")[1]}\n'
+                                            f'Перевозчик - {i["thread"]["carrier"]["title"]}\n'
+                                            f'Дни курсирования нитки: {i["days"]}\n'
+                                            f'Дни, в которые нитка не курсирует: {i["except_days"]}')
             a += 1
     elif params.get('lat'):
         stations = get_stations(**params)
         for i in stations['stations']:
-            await update.message.reply_text(f'{a}. {i['title']}\n'
-                                            f'Тип станции - {i['station_type_name']}\n'
-                                            f'Расстояние от вас - {round(i['distance'], 3)} км\n'
+            await update.message.reply_text(f'{a}. {i["title"]}\n'
+                                            f'Тип станции - {i["station_type_name"]}\n'
+                                            f'Расстояние от вас - {round(i["distance"], 3)} км\n'
                                             f'Сайты с расписанием:')
             for j in i['type_choices']:
                 await update.message.reply_text(i['type_choices'][j]['desktop_url'])
             a += 1
+    await update.message.reply_text('Что ещё вас интересует?', reply_markup=ReplyKeyboardMarkup(
+        [['/voyage_between_stations', '/voyage_by_station'],
+         ['/near_station', '/near_city']]))
     params = {'apikey': os.getenv('APIKEY')}
-    return ConversationHandler.END
+    return '1'
 
 
 async def station(update, context):
@@ -215,7 +218,7 @@ async def near_station(update, context):
 
 
 async def place_response(update, context):
-    global flag
+    global flag, params
     place = update.message.text
     ll = get_ll(place)
     if ll:
@@ -226,8 +229,13 @@ async def place_response(update, context):
             return '4.1'
         else:
             nearest_city = get_city(**params)
-            await update.message.reply_text(f'Ближайший город - {nearest_city['title']}\n'
-                                            f'Расстояние до города - {round(nearest_city['distance'], 3)} км')
+            await update.message.reply_text(f'Ближайший город - {nearest_city["title"]}\n'
+                                            f'Расстояние до города - {round(nearest_city["distance"], 3)} км')
+            await update.message.reply_text('Что ещё вас интересует?', reply_markup=ReplyKeyboardMarkup(
+                                                [['/voyage_between_stations', '/voyage_by_station'],
+                                                 ['/near_station', '/near_city']]))
+            params = {'apikey': os.getenv('APIKEY')}
+            return '1'
     else:
         await update.message.reply_text('Ошибка! Попробуйте ещё раз.')
         return '4'

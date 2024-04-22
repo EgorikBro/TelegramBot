@@ -231,24 +231,14 @@ async def near_station(update, context):
 
 
 async def place_response(update, context):
-    global flag, params
+    global params
     place = update.message.text
     ll = get_ll(place)
     if ll:
-        params['lat'] = ll.split()[1]
-        params['lng'] = ll.split()[0]
-        if not flag:
-            await update.message.reply_text('Укажите радиус, в котором следует искать станции в километрах.')
-            return '4.1'
-        else:
-            nearest_city = get_city(**params)
-            await update.message.reply_text(f'Ближайший город - {nearest_city["title"]}\n'
-                                            f'Расстояние до города - {round(nearest_city["distance"], 3)} км')
-            await update.message.reply_text('Что ещё вас интересует?', reply_markup=ReplyKeyboardMarkup(
-                                                [['/voyage_between_stations', '/voyage_by_station'],
-                                                 ['/near_station', '/near_city']]))
-            params = {'apikey': os.getenv('APIKEY')}
-            return '1'
+        params['lat'] = float(ll.split()[1])
+        params['lng'] = float(ll.split()[0])
+        await update.message.reply_text('Укажите радиус, в котором следует искать станции в километрах.')
+        return '4.1'
     else:
         await update.message.reply_text('Ошибка! Попробуйте ещё раз.')
         return '4'
@@ -269,11 +259,30 @@ async def radius_response(update, context):
 
 
 async def near_city(update, context):
-    global flag
-    flag = True
-    await update.message.reply_text("Введите название объекта, от которого нужно вести поиск.",
-                                    reply_markup=ReplyKeyboardRemove())
-    return '4'
+    await update.message.reply_text('Отправьте геопозицию.', reply_markup=ReplyKeyboardRemove())
+    return '5'
+
+
+async def near_city_response(update, context):
+    global params
+    message = update.message
+    pos = (message.location.longitude, message.location.latitude)
+    params['lat'] = float(pos[1])
+    params['lng'] = float(pos[0])
+    params['distance'] = 50
+    nearest_city = get_city(**params)
+    if nearest_city.get('title'):
+        await update.message.reply_text(f'Ближайший город - {nearest_city["title"]}\n'
+                                        f'Расстояние до города - {round(nearest_city["distance"], 3)} км')
+        await update.message.reply_text('Что ещё вас интересует?', reply_markup=ReplyKeyboardMarkup(
+            [['/voyage_between_stations', '/voyage_by_station'],
+             ['/near_station', '/near_city']]))
+        params = {'apikey': os.getenv('APIKEY')}
+        return '1'
+    else:
+        await update.message.reply_text('В радиусе 50 км не найден город. Попробуйте ещё раз.')
+        return ('5'
+                '')
 
 
 async def stop(update, context):

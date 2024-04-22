@@ -44,6 +44,7 @@ def main():
             '3': [MessageHandler(filters.TEXT & ~filters.COMMAND, station_response)],
             '4': [MessageHandler(filters.TEXT & ~filters.COMMAND, place_response)],
             '4.1': [MessageHandler(filters.TEXT & ~filters.COMMAND, radius_response)],
+            '5': [MessageHandler(filters.LOCATION & ~filters.COMMAND, near_city_response)],
         },
         fallbacks=[CommandHandler('stop', stop)]
     )
